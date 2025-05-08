@@ -9,6 +9,7 @@ class OChow(Block):#Original Chow
             2:[Position(0,0),Position(0,1),Position(1,0),Position(1,1)],
             3:[Position(0,0),Position(0,1),Position(1,0),Position(1,1)]
         }
+        self.move(0,4)
 class LChow(Block):#Loser Chow
     def __init__(self):
         super().__init__(id=3)
@@ -18,6 +19,7 @@ class LChow(Block):#Loser Chow
             2:[Position(1,0),Position(1,1),Position(1,2),Position(2,0)],
             3:[Position(0,0),Position(0,1),Position(1,1),Position(2,1)]
         }
+        self.move(0,3)
 class JChow(Block):#Jason Chow
     def __init__(self):
         super().__init__(id=2)
@@ -27,6 +29,7 @@ class JChow(Block):#Jason Chow
             2:[Position(1,0),Position(1,1),Position(1,2),Position(2,2)],
             3:[Position(0,1),Position(1,1),Position(2,0),Position(2,1)]
         }
+        self.move(0,3)
 class IChow(Block):#I am Chow
     def __init__(self):
         super().__init__(id=6)
@@ -36,6 +39,7 @@ class IChow(Block):#I am Chow
             2:[Position(2,0),Position(2,1),Position(2,2),Position(2,3)],
             3:[Position(0,1),Position(1,1),Position(2,1),Position(3,1)]
         }
+        self.move(-1,3)
 class SChow(Block):#Suck Chow
     def __init__(self):
         super().__init__(id=5)
@@ -45,6 +49,7 @@ class SChow(Block):#Suck Chow
             2:[Position(1,1),Position(1,2),Position(2,0),Position(2,1)],
             3:[Position(0,0),Position(1,0),Position(1,1),Position(2,1)]
         }
+        self.move(0,3)
 class ZChow(Block):#Zero Chow
     def __init__(self):
         super().__init__(id=4)
@@ -54,6 +59,7 @@ class ZChow(Block):#Zero Chow
             2:[Position(1,0),Position(1,1),Position(2,1),Position(2,2)],
             3:[Position(0,1),Position(1,0),Position(1,1),Position(2,0)]
         }
+        self.move(0,3)
 class Tam(Block):# Mr.Tam
     def __init__(self):
         super().__init__(id=7)
@@ -63,3 +69,4 @@ class Tam(Block):# Mr.Tam
             2:[Position(1,0),Position(1,1),Position(1,2),Position(2,1)],
             3:[Position(0,1),Position(1,0),Position(1,1),Position(2,1)]
         }
+        self.move(0,3)

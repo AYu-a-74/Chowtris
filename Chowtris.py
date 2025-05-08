@@ -1,6 +1,5 @@
 import pygame,sys#Van You See itself
-from ChowRayTube import Grid
-from TheRealChows import *
+from VanYouSee import VanYouSeee
 import random#random spawn
 import time#Timer
 RE=(600, 1200)#Limits of Van You See
@@ -17,27 +16,22 @@ def Chowtris():
     pygame.display.set_caption("Forceful Tetris")
     running = True
     Chowseconds=pygame.time.Clock()
-    game_grid=Grid()
-    Chow1=LChow()
-    Chow2=JChow()
-    Chow3=IChow()
-    Chow4=OChow()
-    Chow5=SChow()
-    Chow6=ZChow()
-    Chow7=Tam()
+    vanyousee=VanYouSeee()
+    
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False#Quit Van You See
+            if event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_a:
+                    vanyousee.move_left()
+                if event.key==pygame.K_d:
+                    vanyousee.move_right()
+                if event.key==pygame.K_s:
+                    vanyousee.move_down()
         window.fill(ChowTrisssss)
-        game_grid.draw(window)
-        #Chow1.draw(window)
-        #Chow2.draw(window)
-        #Chow3.draw(window)
-        #Chow4.draw(window)
-        #Chow5.draw(window)
-        #Chow6.draw(window)
-        #Chow7.draw(window)
+        vanyousee.draw(window)
+       
         pygame.display.update()
         Chowseconds.tick(60)
 Chowtris()
