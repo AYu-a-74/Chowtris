@@ -35,7 +35,7 @@ class VanYouSeee:
         for tile in tiles:
             if self.grid.is_inside(tile.row, tile.column)==False:
                 return False
-            return True
+        return True
     def draw(self,window):
         self.grid.draw(window)
         self.current_block.draw(window)
