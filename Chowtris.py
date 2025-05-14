@@ -17,6 +17,8 @@ def Chowtris():
     running = True
     Chowseconds=pygame.time.Clock()
     vanyousee=VanYouSeee()
+    VANYOUSEE_UPDATE=pygame.USEREVENT
+    pygame.time.set_timer(VANYOUSEE_UPDATE,500)
     
     while running:
         for event in pygame.event.get():
@@ -29,8 +31,13 @@ def Chowtris():
                     vanyousee.move_right()
                 if event.key==pygame.K_s:
                     vanyousee.move_down()
+                if event.key==pygame.K_e:
+                    vanyousee.rotate()
+            if event.type==VANYOUSEE_UPDATE:
+                vanyousee.move_down()
         window.fill(ChowTrisssss)
         vanyousee.draw(window)
+        
        
         pygame.display.update()
         Chowseconds.tick(60)
