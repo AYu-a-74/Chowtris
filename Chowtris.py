@@ -9,9 +9,13 @@ def Chowtris():
     score_surface=title_font.render("Forces",True,(255,255,255))
     next_surface=title_font.render("Next",True,(255,255,255))
     game_over_surface=title_font.render("Wasted!",True, (255,0,0))
+    victory_surface=title_font.render("Victory!", True, (255, 255, 0))
     score_rect=pygame.Rect(320,55,170,60)
     next_rect=pygame.Rect(320,215,170,180)
-    
+    level_clear_numbers = [5, 10, 15, 20, 0, 20, 25, 30, 40]  
+    level_time_limits = [30, 40, 45, 50, 30, 55, 60, 70, 90] 
+    level_drop_speed = [700, 600, 500, 400, 150, 300, 250, 200, 150]
+    your_level=0
     ChowTrisssss=((44,44,177))
     OrigChow=(100,100,100)
     BaldChow=(0,0,200)
@@ -24,28 +28,84 @@ def Chowtris():
     pygame.display.set_caption("Forceful Tetris")
     running = True
     Chowseconds=pygame.time.Clock()
+    level_start_time = pygame.time.get_ticks()
     vanyousee=VanYouSeee()
     VANYOUSEE_UPDATE=pygame.USEREVENT
-    pygame.time.set_timer(VANYOUSEE_UPDATE,500)
-    
+    pygame.time.set_timer(VANYOUSEE_UPDATE,level_drop_speed[your_level])
+    level_change=False
+    change_start_time=0
+    next_level=None
+    vanyousee_win=False
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False#Quit Van You See
             if event.type==pygame.KEYDOWN:
-                if vanyousee.game_over==True:
+                if vanyousee.game_over==True or vanyousee_win:
+                    your_level=0
+                    vanyousee_win=False
                     vanyousee.game_over=False
                     vanyousee.reset()
-                if event.key==pygame.K_a and vanyousee.game_over==False:
-                    vanyousee.move_left()
-                if event.key==pygame.K_d and vanyousee.game_over==False:
-                    vanyousee.move_right()
-                if event.key==pygame.K_s and vanyousee.game_over==False:
-                    vanyousee.move_down()
-                if event.key==pygame.K_e and vanyousee.game_over==False:
-                    vanyousee.rotate()
+                    level_start_time=pygame.time.get_ticks()
+                    pygame.time.set_timer(VANYOUSEE_UPDATE,level_drop_speed[your_level])
+                    vanyousee.lines_cleared_current_level=0
+                    level_change=False
+                    continue
+                if not level_change:
+
+                    if event.key==pygame.K_a and vanyousee.game_over==False and not vanyousee_win:
+                        vanyousee.move_left()
+                    if event.key==pygame.K_d and vanyousee.game_over==False and not vanyousee_win:
+                        vanyousee.move_right()
+                    if event.key==pygame.K_s and vanyousee.game_over==False and not vanyousee_win:
+                        vanyousee.move_down()
+                        if vanyousee.game_over and your_level==4:
+                            vanyousee.game_over=False
+                            level_change=True
+                            change_start_time=pygame.time.get_ticks()
+                            next_level=your_level+1
+                    if event.key==pygame.K_e and vanyousee.game_over==False and not vanyousee_win:
+                        vanyousee.rotate()
             if event.type==VANYOUSEE_UPDATE and vanyousee.game_over==False:
-                vanyousee.move_down()
+                if vanyousee.game_over==False and not level_change and not vanyousee_win:
+                    vanyousee.move_down()
+                    if vanyousee.game_over and your_level==4:
+                        vanyousee.game_over=False
+                        level_change=True
+                        change_start_time=pygame.time.get_ticks()
+                        next_level=your_level+1
+        if not level_change and not vanyousee_win and vanyousee.game_over==False:
+            current_time=pygame.time.get_ticks()
+            elapsed_time=(current_time-level_start_time)/1000.0
+            if your_level!=4:
+                if vanyousee.lines_cleared_current_level>=level_clear_numbers[your_level]:
+                    if elapsed_time<level_time_limits[your_level]:
+                        level_change=True
+                        change_start_time=current_time
+                        if your_level<8:
+                            next_level=your_level+1
+                        else:
+                            next_level=None
+                    else:
+                        if your_level<8:
+                            your_level+=1
+                            vanyousee.reset()
+                            vanyousee.lines_cleared_current_level=0
+                            level_start_time=current_time
+                            pygame.time.set_timer(VANYOUSEE_UPDATE,level_drop_speed[your_level])
+                        else:
+                            vanyousee_win=True
+                else:
+                    if elapsed_time>=level_time_limits[your_level]:
+                        vanyousee.game_over=True
+            else:
+                if elapsed_time>=level_time_limits[4]:
+                    your_level=5
+                    vanyousee.reset()
+                    vanyousee.lines_cleared_current_level=0
+                    level_start_time=current_time
+                    pygame.time.set_timer(VANYOUSEE_UPDATE,level_drop_speed[your_level])
+            
         window.fill(ChowTrisssss)
         window.blit(score_surface,(365,20,50,50))
         window.blit(next_surface,(375,180,50,50))
