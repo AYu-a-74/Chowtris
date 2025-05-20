@@ -13,7 +13,8 @@ def Chowtris():
     score_rect=pygame.Rect(320,55,170,60)
     next_rect=pygame.Rect(320,215,170,180)
     level_clear_numbers = [5, 10, 15, 20, 0, 20, 25, 30, 40]  
-    level_time_limits = [30, 40, 45, 50, 30, 55, 60, 70, 90] 
+    #level_time_limits = [30, 40, 45, 50, 30, 55, 60, 70, 90] 
+    level_time_limits = [3, 4, 4, 5, 3, 5, 6, 7, 90]#I only want to test small time intervals
     level_drop_speed = [700, 600, 500, 400, 150, 300, 250, 200, 150]
     your_level=0
     ChowTrisssss=((44,44,177))
@@ -97,6 +98,15 @@ def Chowtris():
                             vanyousee_win=True
                 else:
                     if elapsed_time>=level_time_limits[your_level]:
+                        if your_level==4
+                        start_transition=True
+                        next_level=your_level+1
+                        change_start_time=pygame.time.get_ticks()
+                    elif vanyousee.lines_cleared_current_level>=level_clear_numbers[your_level]:
+                        start_transition=True
+                        next_level=your_level+1
+                        change_start_time=pygame.time.get_ticks()
+                    else:
                         vanyousee.game_over=True
             else:
                 if elapsed_time>=level_time_limits[4]:
@@ -105,12 +115,35 @@ def Chowtris():
                     vanyousee.lines_cleared_current_level=0
                     level_start_time=current_time
                     pygame.time.set_timer(VANYOUSEE_UPDATE,level_drop_speed[your_level])
-            
+        if level_change:
+            current_time=pygame.time.get_ticks()
+            change_elasped=current_time-change_start_time
+            if change_elapsed>=5000:
+                level_change=False
+                if next_level is None or next_level>8:
+                    vanyousee_win=True
+                else:
+                    your_level=next_level
+                    vanyousee.reset()
+                    vanyousee.lines_cleared_current_level=0
+                    level_start_time=current_time
+                    pygame.time.set_timer(VANYOUSEE_UPDATE,level_drop_speed[your_level])
+                next_level=None
         window.fill(ChowTrisssss)
         window.blit(score_surface,(365,20,50,50))
         window.blit(next_surface,(375,180,50,50))
         if vanyousee.game_over==True:
             window.blit(game_over_surface,(355,450,50,50))
+        if vanyousee_win:
+            window.blit(victory_surface,(360,450,50,50))
+        if level_change:
+            seconds_left=5-int((pygame.time.get_ticks()-change_start_time)/1000)
+            if next_level is None or next_level>8:
+                msg = f"End of Forces in {seconds_left}..."
+            else:
+                msg = f"Force Level {next_level} starts in {seconds_left}..."
+            countdown_surface=title_font.render(msg, True, (255, 255, 255))
+            window.blit(countdown_surface, (320, 500,50,50))
         pygame.draw.rect(window, bgc, score_rect, 0, 10)
         pygame.draw.rect(window,bgc,next_rect,0,10)
         vanyousee.draw(window)
