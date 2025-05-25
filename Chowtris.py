@@ -1,4 +1,5 @@
 import pygame,sys,os#Van You See itself
+from pygame.mixer import Sound
 from VanYouSee import VanYouSeee
 from Twiddydinkies import try_use, apply_purchase, get_inventory
 from Chowin import Chowin
@@ -8,6 +9,7 @@ import time#Timer
 RE=(500, 620)#Limits of Van You See
 def Chowtris():
     pygame.init()
+    pygame.mixer.init()
     title_font=pygame.font.Font(None,40)
     score_surface=title_font.render("Forces",True,(255,255,255))
     next_surface=title_font.render("Next",True,(255,255,255))
@@ -16,8 +18,8 @@ def Chowtris():
     score_rect=pygame.Rect(320,55,170,60)
     next_rect=pygame.Rect(320,215,170,180)
     level_clear_numbers = [5, 10, 15, 20, 0, 20, 25, 30, 40] 
-    #level_time_limits =[30,1,1,1,60,1,1,1,2] Only for testing
-    level_time_limits = [30, 40, 45, 50, 30, 55, 60, 70, 90] 
+    level_time_limits =[3,1,1,1,100,1,1,1,2] #Only for testing
+    #level_time_limits = [30, 40, 45, 50, 30, 55, 60, 70, 90] 
     level_drop_speed = [700, 600, 500, 400, 150, 300, 250, 200, 150]
     your_level=0
     ChowTrisssss=((44,44,177))
@@ -31,12 +33,25 @@ def Chowtris():
     window = pygame.display.set_mode(RE)
     pygame.display.set_caption("Forceful Tetris")
     base = os.path.dirname(__file__)
+    noises=os.path.join(base,"noises")
+    level_bgms=[os.path.join(noises,f"Level{i}.mp3") for i in range(9)]
+    shop_bgm=os.path.join(noises,"zombie_shop.mp3")
+    lose_noise = [
+        Sound(os.path.join(noises, "brains.mp3")),
+        Sound(os.path.join(noises, "nooo.mp3"))
+    ]
+    win_noise = Sound(os.path.join(noises, "winwin.mp3"))
+
     assets = os.path.join(base, "assets")
     bomb_raw  = pygame.image.load(os.path.join(assets, "bomb.png")).convert_alpha()
     boost_raw = pygame.image.load(os.path.join(assets, "boost.png")).convert_alpha()
     icon_size=(100,100)
     bomb_icon  = pygame.transform.scale(bomb_raw,  icon_size)
     boost_icon = pygame.transform.scale(boost_raw, icon_size)
+    def play_bgm(path):
+        pygame.mixer.music.load(path)
+        pygame.mixer_music.play(-1)
+    play_bgm(level_bgms[0])
     running = True
     Chowseconds=pygame.time.Clock()
     level_start_time = pygame.time.get_ticks()
@@ -73,6 +88,8 @@ def Chowtris():
                         )
             shop.set_dialogue("Finish")
             shop_open = True
+            pygame.mixer.music.fadeout(500)
+            play_bgm(shop_bgm)
             shop_countdown = False
             shop_exit_time = pygame.time.get_ticks()
             continue
@@ -126,6 +143,7 @@ def Chowtris():
                     vanyousee.lines_cleared_current_level = 0
                     level_start_time = pygame.time.get_ticks()
                     pygame.time.set_timer(VANYOUSEE_UPDATE, level_drop_speed[your_level])
+                    play_bgm(level_bgms[your_level])
                 next_level=None
             Chowseconds.tick(60)
             continue
@@ -144,9 +162,15 @@ def Chowtris():
                             shop.set_dialogue("Finish_4")
                             next_level = your_level + 1
                             shop_open = True
+                            pygame.mixer.music.fadeout(500)
+                            play_bgm(shop_bgm)
                             shop_countdown= False
                             shop_exit_time= pygame.time.get_ticks()
                         if vanyousee.game_over and not vanyousee.bless_triggered:
+                            pygame.mixer.music.fadeout(500)
+                            lose_noise[0].play()
+                            time.sleep(1)
+                            lose_noise[1].play()
                             window.fill(ChowTrisssss)
                             vanyousee.draw(window)
                             window.blit(game_over_surface, (355, 450))
@@ -162,6 +186,7 @@ def Chowtris():
                             your_level = 0
                             vanyousee_win = False
                             vanyousee.reset()
+                            play_bgm(level_bgms[0])
                             level_start_time = pygame.time.get_ticks()
                             pygame.time.set_timer(VANYOUSEE_UPDATE, level_drop_speed[your_level])
                             continue
@@ -182,9 +207,15 @@ def Chowtris():
                         shop.set_dialogue("Finish_4")
                         next_level = your_level + 1
                         shop_open= True
+                        pygame.mixer.music.fadeout(500)
+                        play_bgm(shop_bgm)
                         shop_countdown = False
                         shop_exit_time = pygame.time.get_ticks()
                     if vanyousee.game_over and not vanyousee.bless_triggered:
+                        pygame.mixer.music.fadeout(500)
+                        lose_noise[0].play()
+                        time.sleep(1)
+                        lose_noise[1].play()
                         window.fill(ChowTrisssss)
                         vanyousee.draw(window)
                         window.blit(game_over_surface, (355, 450))
@@ -200,6 +231,7 @@ def Chowtris():
                         your_level = 0
                         vanyousee_win = False
                         vanyousee.reset()
+                        play_bgm(level_bgms[0])
                         level_start_time = pygame.time.get_ticks()
                         pygame.time.set_timer(VANYOUSEE_UPDATE, level_drop_speed[your_level])
                         continue
@@ -223,6 +255,8 @@ def Chowtris():
                 elif your_level == 7:
                     shop.set_dialogue("Finish_7")
                 shop_open=True
+                pygame.mixer.music.fadeout(500)
+                play_bgm(shop_bgm)
                 shop_countdown=False
                 shop_exit_time=0
                 continue
@@ -234,6 +268,8 @@ def Chowtris():
                 next_level=your_level+1
                 chowin.calculate_earnings(lines,your_level,boost_active = vanyousee.boost_active)
                 shop_open=True
+                pygame.mixer.music.fadeout(500)
+                play_bgm(shop_bgm)
                 continue
         if start_transition:
             time_passed = pygame.time.get_ticks() - change_start_time
@@ -311,6 +347,22 @@ def Chowtris():
             window.blit(game_over_surface,(355,450,50,50))
         if vanyousee_win:
             window.blit(victory_surface,(360,450,50,50))
+            pygame.mixer.music.stop()
+            win_noise.play()
+            waiting = True
+            while waiting:
+                ev = pygame.event.wait()
+                if ev.type in (pygame.KEYDOWN, pygame.QUIT):
+                    waiting = False
+                    if ev.type == pygame.QUIT:
+                        running = False
+            your_level = 0
+            vanyousee_win = False
+            vanyousee.reset()
+            play_bgm(level_bgms[0])
+            level_start_time = pygame.time.get_ticks()
+            pygame.time.set_timer(VANYOUSEE_UPDATE, level_drop_speed[your_level])
+            continue
         if level_change or start_transition:
             seconds_left=3-int((pygame.time.get_ticks()-change_start_time)/1000)
             if next_level is None or next_level>8:
