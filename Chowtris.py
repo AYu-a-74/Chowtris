@@ -16,7 +16,7 @@ def Chowtris():
     score_rect=pygame.Rect(320,55,170,60)
     next_rect=pygame.Rect(320,215,170,180)
     level_clear_numbers = [5, 10, 15, 20, 0, 20, 25, 30, 40]  
-    level_time_limits = [300, 40, 45, 50, 30, 55, 60, 70, 90] 
+    level_time_limits = [3, 40, 45, 50, 30, 55, 60, 70, 90] 
     level_drop_speed = [700, 600, 500, 400, 150, 300, 250, 200, 150]
     your_level=0
     ChowTrisssss=((44,44,177))
