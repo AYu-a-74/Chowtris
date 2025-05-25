@@ -62,12 +62,14 @@ class ChowShop:
         self.window.blit(self.npc_image, npc_rect)
         title_surf = self.title_font.render("CRAZY CHOW'S TWIDDYDINKIES", True, (0,0,177))
         self.window.blit(title_surf, (5,20))
+        coin_surf=self.dialoge_font.render(f"Choins: {self.chowin.total}", True, (200,200,0))
+        self.window.blit(coin_surf,(395,50))
         self.window.blit(self.bomb_icon, (self.BOMB_POS))
-        txt = f"Left – Bomb (4) x{items[0].count}"
+        txt = f"Left – Bomb (5) x{items[0].count}"
         surf = self.dialoge_font.render(txt, True, (0,0,0))
         self.window.blit(surf, (5,150))
         self.window.blit(self.boost_icon, (self.BOOST_POS))
-        txt = f"Right – Boost (5) x{items[1].count}"
+        txt = f"Right – Boost (4) x{items[1].count}"
         surf = self.dialoge_font.render(txt, True, (0,0,0))
         self.window.blit(surf, (5,200))
         self.window.blit(self.bless_icon, (self.BLESS_POS))

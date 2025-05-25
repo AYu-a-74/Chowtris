@@ -15,6 +15,7 @@ class VanYouSeee:
         self.boost_active=False
         self.boost_end_time=0
         self.bless_active=False
+        self.bless_triggered = False
     def get_random_block(self):
         if len(self.blocks)==0:
             self.blocks=[IChow(), JChow(), LChow(), OChow(), SChow(), ZChow(), Tam()]
@@ -28,6 +29,7 @@ class VanYouSeee:
         self.boost_end_time=pygame.time.get_ticks()+duration_ms
     def activate_bless(self):
         self.bless_active=True
+        self.bless_triggered = False
     def move_left(self):
         self.current_block.move(0,-1)
         if self.block_inside()== False or self.block_fits()==False:
@@ -45,10 +47,22 @@ class VanYouSeee:
         tiles=self.current_block.get_cell_positions()
         for position in tiles:
             self.grid.grid[position.row][position.column]=self.current_block.id
-        cleared=self.grid.clear_full_rows()
-        if self.bomb_active:
-            if cleared<3:
-                cleared=3
+        cleared_rows = self.grid.clear_full_rows_with_indices()
+        cleared = len(cleared_rows)
+        if self.bomb_active and cleared>0:
+            extra=0
+            for r in cleared_rows:
+                for above in (r - 1, r - 2):
+                    if 0 <= above < self.grid.num_rows:
+                        self.grid.clear_row(above)
+                        extra += 1
+            if extra:
+                top = min(cleared_rows) - 2
+                if top < 0:
+                    top = 0
+                for row in range(top, -1, -1):
+                    self.grid.move_row_down(row, extra)
+            cleared += extra
             self.bomb_active=False
         now=pygame.time.get_ticks()
         if self.boost_active:
@@ -61,9 +75,10 @@ class VanYouSeee:
         self.next_block=self.get_random_block()
         if self.block_fits()==False:
             if self.bless_active==True:
-                self.bless_active=False
+                self.bless_active= False
+                self.bless_triggered = True
             else:
-                self.game_over=True
+                self.game_over= True
     def reset(self):
         self.grid.reset()
         self.blocks=[IChow(), JChow(), LChow(), OChow(), SChow(), ZChow(), Tam()]
@@ -73,6 +88,14 @@ class VanYouSeee:
         self.lines_cleared_current_level=0
         self.bomb_active=False
         self.boost_active=False
+        if self.bless_active==True:
+            self.bless_active=True
+        else:
+            self.bless_active=False
+        if self.bless_triggered==True:
+            self.bless_triggered=True
+        else:
+            self.bless_triggered=False
     def block_fits(self):
         tiles=self.current_block.get_cell_positions()
         for tile in tiles:

@@ -41,6 +41,17 @@ class Grid:
             elif completed>0:
                 self.move_row_down(row,completed)
         return completed
+    def clear_full_rows_with_indices(self):
+        cleared_indices=[]
+        shift=0
+        for row in range(self.num_rows-1,-1,-1):
+            if self.is_row_full(row):
+                self.clear_row(row)
+                cleared_indices.append(row)
+                shift += 1
+            elif shift > 0:
+                self.move_row_down(row, shift)
+        return cleared_indices
     def reset(self):
         for row in range(self.num_rows):
             for column in range(self.num_cols):
