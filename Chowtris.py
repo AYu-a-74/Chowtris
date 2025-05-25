@@ -1,5 +1,8 @@
 import pygame,sys#Van You See itself
 from VanYouSee import VanYouSeee
+from Twiddydinkies import try_use, apply_purchase, get_inventory
+from Chowin import Chowin
+from NoChowShop import ChowShop
 import random#random spawn
 import time#Timer
 RE=(500, 620)#Limits of Van You See
@@ -13,7 +16,7 @@ def Chowtris():
     score_rect=pygame.Rect(320,55,170,60)
     next_rect=pygame.Rect(320,215,170,180)
     level_clear_numbers = [5, 10, 15, 20, 0, 20, 25, 30, 40]  
-    level_time_limits = [30, 40, 45, 50, 30, 55, 60, 70, 90] 
+    level_time_limits = [300, 40, 45, 50, 30, 55, 60, 70, 90] 
     level_drop_speed = [700, 600, 500, 400, 150, 300, 250, 200, 150]
     your_level=0
     ChowTrisssss=((44,44,177))
@@ -39,44 +42,103 @@ def Chowtris():
     change_start_time=0
     next_level=None
     vanyousee_win=False
+    chowin=Chowin()
+    shop=ChowShop(window,chowin)
+    dialogue_index=0
+    shop_open=False
+    shop_exit_time=0
+    God_purchase_times=0
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False#Quit Van You See
-            if event.type==pygame.KEYDOWN:
-                if vanyousee.game_over==True or vanyousee_win:
-                    your_level=0
-                    vanyousee_win=False
-                    vanyousee.game_over=False
+        events=pygame.event.get()
+        for event in events:
+            if event.type==pygame.QUIT:
+                running = False
+        if shop_open:
+            for event in events:
+                if event.type == pygame.KEYDOWN:
+                    if event.key==pygame.K_q:
+                        shop_open=False
+                        chowin.reset()
+                        shop_exit_time=pygame.time.get_ticks()
+                    elif event.key==pygame.K_t:
+                        dialogue_index=(dialogue_index + 1) % len(shop.get_dialogues())
+                    elif event.key==pygame.K_LEFT:
+                        if chowin.try_spend(5):
+                            apply_purchase("bomb")
+                    elif event.key==pygame.K_RIGHT:
+                        if chowin.try_spend(4):
+                            apply_purchase("boost")
+                    elif event.key==pygame.K_UP:
+                        if God_purchase_times==0:
+                            if chowin.try_spend(50):
+                                apply_purchase("bless")
+                                God_purchase_times=1
+                        else:
+                            print("No")
+            shop.draw(dialogue_index)
+            Chowseconds.tick(30)
+            continue
+            
+        if next_level is not None:
+            elapsed=pygame.time.get_ticks()-shop_exit_time
+            window.fill(ChowTrisssss)
+            cnt=max(0, 3 - int(elapsed/1000))
+            text=title_font.render(f"Next Level in {cnt}...", True,(255,255,255))
+            window.blit(text,(150,300))
+            pygame.display.update()
+            if elapsed>=3000:
+                if next_level is None or next_level >= len(level_clear_numbers):
+                    vanyousee_win = True
+                else:
+                    your_level = next_level
                     vanyousee.reset()
-                    level_start_time=pygame.time.get_ticks()
-                    pygame.time.set_timer(VANYOUSEE_UPDATE,level_drop_speed[your_level])
-                    vanyousee.lines_cleared_current_level=0
-                    level_change=False
-                    continue
-                if not level_change:
-
-                    if event.key==pygame.K_a and vanyousee.game_over==False and not vanyousee_win and not start_transition and not level_change:
-                        vanyousee.move_left()
-                    if event.key==pygame.K_d and vanyousee.game_over==False and not vanyousee_win and not start_transition and not level_change:
-                        vanyousee.move_right()
-                    if event.key==pygame.K_s and vanyousee.game_over==False and not vanyousee_win and not start_transition and not level_change:
-                        vanyousee.move_down()
-                        if vanyousee.game_over and your_level==4:
-                            vanyousee.game_over=False
-                            level_change=True
-                            change_start_time=pygame.time.get_ticks()
-                            next_level=your_level+1
-                    if event.key==pygame.K_e and vanyousee.game_over==False and not vanyousee_win and not start_transition and not level_change:
-                        vanyousee.rotate()
-            if event.type==VANYOUSEE_UPDATE and vanyousee.game_over==False and not vanyousee_win and not start_transition and not level_change:
-                if vanyousee.game_over==False and not level_change and not vanyousee_win:
+                    vanyousee.lines_cleared_current_level = 0
+                    level_start_time = pygame.time.get_ticks()
+                    pygame.time.set_timer(VANYOUSEE_UPDATE, level_drop_speed[your_level])
+                next_level=None
+            Chowseconds.tick(60)
+            continue
+        for event in events:
+            if event.type==pygame.KEYDOWN:
+                if event.key == pygame.K_a:
+                    vanyousee.move_left()
+                elif event.key == pygame.K_d:
+                    vanyousee.move_right()
+                elif event.key == pygame.K_s:
                     vanyousee.move_down()
-                    if vanyousee.game_over and your_level==4:
-                        vanyousee.game_over=False
-                        level_change=True
-                        change_start_time=pygame.time.get_ticks()
-                        next_level=your_level+1
+                elif event.key == pygame.K_e:
+                    vanyousee.rotate()
+                elif event.key == pygame.K_1 and try_use("bomb"):
+                    vanyousee.activate_bomb()
+                elif event.key == pygame.K_2 and try_use("boost"):
+                    vanyousee.activate_boost(10000)
+                elif event.key == pygame.K_3 and try_use("bless"):
+                    vanyousee.activate_bless()
+            elif event.type == VANYOUSEE_UPDATE:
+                vanyousee.move_down()
+                if vanyousee.game_over and your_level==4:
+                    vanyousee.game_over=False
+                    level_change=True
+                    change_start_time=pygame.time.get_ticks()
+                    next_level=your_level+1
+        if not shop_open and next_level is None and not vanyousee.game_over and not vanyousee_win:
+            now = pygame.time.get_ticks()
+            elapsed_sec = (now - level_start_time) / 1000.0
+            lines = vanyousee.lines_cleared_current_level
+            clear_target = level_clear_numbers[your_level]
+            time_limit    = level_time_limits[your_level]
+            if clear_target>0 and lines>=clear_target:
+                next_level=your_level+1 if your_level < 8 else None
+                chowin.calculate_earnings(lines,your_level)
+                shop_open=True
+                dialogue_index=0
+                continue
+            if elapsed_sec>=time_limit:
+                next_level=your_level+1 if your_level < 8 else None
+                chowin.calculate_earnings(lines,your_level)
+                shop_open=True
+                dialogue_index=0
+                continue
         if start_transition:
             time_passed = pygame.time.get_ticks() - change_start_time
             if time_passed >= 3000:
@@ -100,6 +162,7 @@ def Chowtris():
                 if vanyousee.lines_cleared_current_level>=level_clear_numbers[your_level]:
                     if elapsed_time<level_time_limits[your_level]:
                         level_change=True
+                        start_transition=True
                         change_start_time=current_time
                         if your_level<8:
                             next_level=your_level+1
