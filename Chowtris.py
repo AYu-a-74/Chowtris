@@ -15,8 +15,9 @@ def Chowtris():
     victory_surface=title_font.render("Victory!", True, (255, 255, 0))
     score_rect=pygame.Rect(320,55,170,60)
     next_rect=pygame.Rect(320,215,170,180)
-    level_clear_numbers = [5, 10, 15, 20, 0, 20, 25, 30, 40]  
-    level_time_limits = [3, 40, 45, 50, 30, 55, 60, 70, 90] 
+    level_clear_numbers = [5, 10, 15, 20, 0, 20, 25, 30, 40] 
+    level_time_limits =[1,1,1,1,90,1,1,1,90] 
+    #level_time_limits = [30, 40, 45, 50, 30, 55, 60, 70, 90] 
     level_drop_speed = [700, 600, 500, 400, 150, 300, 250, 200, 150]
     your_level=0
     ChowTrisssss=((44,44,177))
@@ -44,6 +45,7 @@ def Chowtris():
     vanyousee_win=False
     chowin=Chowin()
     shop=ChowShop(window,chowin)
+    shop_countdown=False
     dialogue_index=0
     shop_open=False
     shop_exit_time=0
@@ -58,23 +60,30 @@ def Chowtris():
                 if event.type == pygame.KEYDOWN:
                     if event.key==pygame.K_q:
                         shop_open=False
-                        chowin.reset()
+                        shop_countdown=True
                         shop_exit_time=pygame.time.get_ticks()
                     elif event.key==pygame.K_t:
-                        dialogue_index=(dialogue_index + 1) % len(shop.get_dialogues())
+                        shop.cycle_talk()
                     elif event.key==pygame.K_LEFT:
                         if chowin.try_spend(5):
                             apply_purchase("bomb")
+                        else:
+                            shop.set_dialogue("too_poor")
                     elif event.key==pygame.K_RIGHT:
                         if chowin.try_spend(4):
                             apply_purchase("boost")
+                        else:
+                            shop.set_dialogue("too_poor")
                     elif event.key==pygame.K_UP:
                         if God_purchase_times==0:
                             if chowin.try_spend(50):
                                 apply_purchase("bless")
                                 God_purchase_times=1
+                                shop.set_dialogue("buy_bless")
+                            else:
+                                shop.set_dialogue("too_poor")
                         else:
-                            print("No")
+                            shop.set_dialogue("buy_after_bless")
             shop.draw()
             Chowseconds.tick(30)
             continue
@@ -106,6 +115,23 @@ def Chowtris():
                     vanyousee.move_right()
                 elif event.key == pygame.K_s:
                     vanyousee.move_down()
+                    if vanyousee.game_over:
+                        if your_level == 4:
+                            vanyousee.game_over = False
+                            chowin.calculate_earnings(vanyousee.lines_cleared_current_level, your_level)
+                            shop.set_dialogue("Finish_4")
+                            shop_open = True
+                            shop_countdown= False
+                            shop_exit_time= pygame.time.get_ticks()
+                        else:
+                            your_level= 0
+                            vanyousee_win = False
+                            vanyousee.game_over = False
+                            vanyousee.reset()
+                            level_start_time = pygame.time.get_ticks()
+                            pygame.time.set_timer(VANYOUSEE_UPDATE, level_drop_speed[your_level])
+                            vanyousee.lines_cleared_current_level = 0
+                            level_change = False
                 elif event.key == pygame.K_e:
                     vanyousee.rotate()
                 elif event.key == pygame.K_1 and try_use("bomb"):
@@ -116,28 +142,46 @@ def Chowtris():
                     vanyousee.activate_bless()
             elif event.type == VANYOUSEE_UPDATE:
                 vanyousee.move_down()
-                if vanyousee.game_over and your_level==4:
-                    vanyousee.game_over=False
-                    level_change=True
-                    change_start_time=pygame.time.get_ticks()
-                    next_level=your_level+1
+                if vanyousee.game_over:
+                    if your_level==4:
+                        vanyousee.game_over=False
+                        chowin.calculate_earnings(vanyousee.lines_cleared_current_level, your_level)
+                        shop.set_dialogue("Finish_4")
+                        shop_open= True
+                        shop_countdown = False
+                        shop_exit_time = pygame.time.get_ticks()
+                    else:
+                        your_level = 0
+                        vanyousee_win = False
+                        vanyousee.game_over = False
+                        vanyousee.reset()
+                        level_start_time = pygame.time.get_ticks()
+                        pygame.time.set_timer(VANYOUSEE_UPDATE, level_drop_speed[your_level])
+                        vanyousee.lines_cleared_current_level = 0
+                        level_change = False
         if not shop_open and next_level is None and not vanyousee.game_over and not vanyousee_win:
             now = pygame.time.get_ticks()
             elapsed_sec = (now - level_start_time) / 1000.0
             lines = vanyousee.lines_cleared_current_level
             clear_target = level_clear_numbers[your_level]
-            time_limit    = level_time_limits[your_level]
-            if clear_target>0 and lines>=clear_target:
+            time_limit= level_time_limits[your_level]
+            if (clear_target>0 and lines>=clear_target) or elapsed_sec>=time_limit:
                 next_level=your_level+1 if your_level < 8 else None
                 chowin.calculate_earnings(lines,your_level)
+                if your_level in (0,1,2,3,5,6):
+                    shop.set_dialogue("Finish")
+                elif your_level == 4:
+                    shop.set_dialogue("Finish_4")
+                elif your_level == 7:
+                    shop.set_dialogue("Finish_7")
                 shop_open=True
-                dialogue_index=0
+                shop_countdown=False
+                shop_exit_time=0
                 continue
             if elapsed_sec>=time_limit:
                 next_level=your_level+1 if your_level < 8 else None
                 chowin.calculate_earnings(lines,your_level)
                 shop_open=True
-                dialogue_index=0
                 continue
         if start_transition:
             time_passed = pygame.time.get_ticks() - change_start_time
