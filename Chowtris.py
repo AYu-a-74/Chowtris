@@ -75,7 +75,7 @@ def Chowtris():
                                 God_purchase_times=1
                         else:
                             print("No")
-            shop.draw(dialogue_index)
+            shop.draw()
             Chowseconds.tick(30)
             continue
             

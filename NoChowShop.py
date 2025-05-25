@@ -11,10 +11,10 @@ class ChowShop:
         self.npc_image=pygame.image.load(os.path.join(self.assets,"NPC.png")).convert_alpha()
         self.sold_out_npc_image=pygame.image.load(os.path.join(self.assets,"Sold_out_NPC.png")).convert_alpha()
         self.sold_out_image=pygame.image.load(os.path.join(self.assets,"Sold out.png")).convert_alpha()
-        self.bomb_image=pygame.image.load(os.path.join(self.assets,"bomb.png")).convert_alpha()
-        self.boost_image=pygame.image.load(os.path.join(self.assets,"boost.png")).convert_alpha()
-        self.bless_image=pygame.image.load(os.path.join(self.assets,"bless.png")).convert_alpha()
-        self.title_font=pygame.font.Font(None,50)
+        self.bomb_icon=pygame.image.load(os.path.join(self.assets,"bomb.png")).convert_alpha()
+        self.boost_icon=pygame.image.load(os.path.join(self.assets,"boost.png")).convert_alpha()
+        self.bless_icon=pygame.image.load(os.path.join(self.assets,"blesss.png")).convert_alpha()
+        self.title_font=pygame.font.Font(None,45)
         self.dialoge_font=pygame.font.Font(None,30)
         self.dialoges=[
             "You survived a level?! Impressive! You should buy something for the following levels!!"
@@ -30,11 +30,35 @@ class ChowShop:
             "You have a good taste! Wish Chow God make you complete every level!"
             "Why are you staring at that! Chow God's Bless is alreasy sold out!"
         ]
+        self.current_dialogue=""
         self.dialog_index=0
-    def draw(self,dialogue_text):
+    def set_dialogue(self,text):
+        self.current_dialogue=text
+    def draw(self,dialogue_index=None):
         self.window.blit(self.bg_image,(0,0))
         npc_rect = self.npc_image.get_rect(bottomright=(
         self.window.get_width() - 20,
         self.window.get_height() - 20
     ))
         self.window.blit(self.npc_image,npc_rect)
+        title_surf = self.title_font.render("CRAZY CHOW'S TWIDDYDINKIES", True, (0,0,0))
+        self.window.blit(title_surf, (5,20))
+        y=120
+        self.window.blit(self.bomb_icon, (20,y))
+        txt = f"Left – Bomb (4) x{items[0].count}"
+        surf = self.dialoge_font.render(txt, True, (255,255,255))
+        self.window.blit(surf, (70,y+8))
+        y += 50
+        self.window.blit(self.boost_icon, (20,y))
+        txt = f"Up    – Boost (5) x{items[1].count}"
+        surf = self.dialoge_font.render(txt, True, (255,255,255))
+        self.window.blit(surf, (70,y+8))
+        y += 50
+        self.window.blit(self.bless_icon, (20,y))
+        txt = f"Right – Bless (50) {'✔' if items[2].count>0 else ''}"
+        surf = self.dialoge_font.render(txt, True, (255,255,255))
+        self.window.blit(surf, (70,y+8))
+        dlg = self.dialoge_font.render(self.current_dialogue, True, (175,238,238))
+        dlg_rect = dlg.get_rect(center=(self.window.get_width()//2, self.window.get_height()-40))
+        self.window.blit(dlg, dlg_rect)
+        pygame.display.flip()
