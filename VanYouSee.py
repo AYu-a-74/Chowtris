@@ -3,8 +3,8 @@ from ChowRayTube import Grid
 from TheRealChows import *
 import random
 
-class VanYouSeee:
-    def __init__(self):
+class VanYouSeee:#How to make VanYouSee work
+    def __init__(self):#Initial set ups
         self.grid=Grid()
         self.blocks=[IChow(), JChow(), LChow(), OChow(), SChow(), ZChow(), Tam()]
         self.current_block=self.get_random_block()
@@ -16,34 +16,34 @@ class VanYouSeee:
         self.boost_end_time=0
         self.bless_active=False
         self.bless_triggered = False
-    def get_random_block(self):
+    def get_random_block(self):#Random block spawning
         if len(self.blocks)==0:
             self.blocks=[IChow(), JChow(), LChow(), OChow(), SChow(), ZChow(), Tam()]
         block=random.choice(self.blocks)
         self.blocks.remove(block)
         return block
-    def activate_bomb(self):
+    def activate_bomb(self):#Use bomb
         self.bomb_active=True
-    def activate_boost(self,duration_ms):
+    def activate_boost(self,duration_ms):#Use boost
         self.boost_active=True
         self.boost_end_time=pygame.time.get_ticks()+duration_ms
-    def activate_bless(self):
+    def activate_bless(self):#Auto activate bless when you lose
         self.bless_active=True
         self.bless_triggered = False
-    def move_left(self):
+    def move_left(self):#Move the block left
         self.current_block.move(0,-1)
         if self.block_inside()== False or self.block_fits()==False:
             self.current_block.move(0,1)
-    def move_right(self):
+    def move_right(self):#Move the block right
         self.current_block.move(0,1)
         if self.block_inside()== False or self.block_fits()==False:
             self.current_block.move(0,-1)
-    def move_down(self):
+    def move_down(self):#Move the block down
         self.current_block.move(1,0)
         if self.block_inside()== False or self.block_fits()==False:
             self.current_block.move(-1,0)
             self.lock_block() 
-    def lock_block(self):
+    def lock_block(self):#Lock the block that reaches bottom
         tiles=self.current_block.get_cell_positions()
         for position in tiles:
             self.grid.grid[position.row][position.column]=self.current_block.id
@@ -73,13 +73,13 @@ class VanYouSeee:
         self.lines_cleared_current_level+=cleared
         self.current_block=self.next_block
         self.next_block=self.get_random_block()
-        if self.block_fits()==False:
+        if self.block_fits()==False:#If it is locked, but does not fit
             if self.bless_active==True:
                 self.bless_active= False
                 self.bless_triggered = True
             else:
                 self.game_over= True
-    def reset(self):
+    def reset(self):#Restarting the VanYouSee
         self.grid.reset()
         self.blocks=[IChow(), JChow(), LChow(), OChow(), SChow(), ZChow(), Tam()]
         self.current_block=self.get_random_block()
@@ -96,23 +96,23 @@ class VanYouSeee:
             self.bless_triggered=True
         else:
             self.bless_triggered=False
-    def block_fits(self):
+    def block_fits(self):#Does the block fit to be placed in a spot
         tiles=self.current_block.get_cell_positions()
         for tile in tiles:
             if self.grid.is_empty(tile.row,tile.column)==False:
                 return False
         return True
-    def rotate(self):
+    def rotate(self):#Going in circles!
         self.current_block.rotate()
         if self.block_inside()==False or self.block_fits()==False:
             self.current_block.undo_rotation()
-    def block_inside(self):
+    def block_inside(self):#Prevent blocks on top of other blocks
         tiles=self.current_block.get_cell_positions()
         for tile in tiles:
             if self.grid.is_inside(tile.row, tile.column)==False:
                 return False
         return True
-    def draw(self,window):
+    def draw(self,window):#Drawing upcoming blocks
         self.grid.draw(window)
         self.current_block.draw(window,11,11)
         if self.next_block.id==6:

@@ -1,15 +1,16 @@
+#This is where you have the block information
 from ChowMians import Block
 from XYZs import Position
 class OChow(Block):#Original Chow
-    def __init__(self):
+    def __init__(self):#Initialize the block
         super().__init__(id=1)
         self.cells={
             0:[Position(0,0),Position(0,1),Position(1,0),Position(1,1)],
             1:[Position(0,0),Position(0,1),Position(1,0),Position(1,1)],
             2:[Position(0,0),Position(0,1),Position(1,0),Position(1,1)],
             3:[Position(0,0),Position(0,1),Position(1,0),Position(1,1)]
-        }
-        self.move(0,4)
+        }#Block information
+        self.move(0,4)#Initial block spawn point
 class LChow(Block):#Loser Chow
     def __init__(self):
         super().__init__(id=3)

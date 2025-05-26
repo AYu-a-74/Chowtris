@@ -2,17 +2,18 @@ import pygame,sys,os,random
 from Twiddydinkies import AllItem as items
 from Chowin import Chowin
 from pygame.mixer import Sound
-class ChowShop:
-    def __init__(self,window,chowin):
+class ChowShop:#Tha shop!
+    def __init__(self,window,chowin):#Shop settings
         self.window=window
         self.chowin=chowin
+        #Images and Sounds
         self.base=os.path.dirname(__file__)
         self.assets=os.path.join(self.base,"assets")
         noises=os.path.join(self.base,"noises")
         icon_size=(100,100)
         zombie_size=(500,500)
         npc_size=(770,550)
-        sold_out_size=(500,500)
+        sold_out_size=(750,500)
         bomb_raw=pygame.image.load(os.path.join(self.assets,"bomb.png")).convert_alpha()
         boost_raw=pygame.image.load(os.path.join(self.assets,"boost.png")).convert_alpha()
         bless_raw=pygame.image.load(os.path.join(self.assets,"blesss.png")).convert_alpha()
@@ -21,8 +22,7 @@ class ChowShop:
         sold_out_raw=pygame.image.load(os.path.join(self.assets,"Sold out.png")).convert_alpha()
         self.bg_image=pygame.image.load(os.path.join(self.assets,"bg.png")).convert()
         self.npc_image=pygame.transform.scale(npc_raw, npc_size)
-        tmp=pygame.transform.scale(sold_out_npc_raw,npc_size)
-        self.sold_out_npc_image = pygame.transform.rotate(tmp, -30)
+        self.sold_out_npc_image=pygame.transform.scale(sold_out_npc_raw,npc_size)
         self.sold_out_image=pygame.transform.scale(sold_out_raw,sold_out_size)
         self.bomb_icon=pygame.transform.scale(bomb_raw, icon_size)
         self.boost_icon=pygame.transform.scale(boost_raw, icon_size)
@@ -39,6 +39,7 @@ class ChowShop:
         ]
         self.title_font=pygame.font.Font(None,45)
         self.dialoge_font=pygame.font.Font(None,30)
+        #Dialogues
         self.dialoges={
             "Finish":"You survived a level?! Impressive! You should\n buy something for the following levels!!",
             "Finish_4":"You are back! I think you have a lot of\n Chowins now! Buy whatever you want!",
@@ -52,17 +53,19 @@ class ChowShop:
             "too_poor":"TOO EXPENSIVE? WHAT ARE YOU SAYING?\n I AM A DISHONEST CONEHEAD ZOMBIE?!\n YOU THNIK TOO MUCH! PAY OR NOTHING!",
             "buy_bless":"You have a good taste! Wish Chow God\n make you complete every level!",
             "buy_after_bless":"Why are you staring at that!\n Chow God's Bless is alreasy sold out!"
-        }
+        }#Ironically, he says "brainz" when you buy the bless.
         self.current_dialogue=""
         self.talk_keys_before=["T_1","T_2","T_3","T_4","T_5","T_without_bless"]
-        self.talk_keys_after=["T_1","T_2","T_3","T_4","T_5"]
+        self.talk_keys_after=["T_1","T_2","T_3","T_4","T_5"]#Yes, he has 2 sets of dialogues
         self.talk_index=0
+        #Positions
         self.BOMB_POS  = (60, 445)
         self.BOOST_POS = (160, 445)
         self.BLESS_POS = (-95, 175)
+        #Sold out
         self.bless_sold_start_time = None
         self.sold_out_drawn = False
-    def set_dialogue(self,key):
+    def set_dialogue(self,key):#NPC dialogue
         self.current_dialogue=self.dialoges.get(key,"")
         if key=="buy_bless":
             self.big_money.play()
@@ -70,7 +73,7 @@ class ChowShop:
             self.sold_out_drawn = False
         elif key in("too_poor","buy_after_bless"):
             random.choice(self.you_poor).play()
-    def cycle_talk(self):
+    def cycle_talk(self):#"t" dialogue
         random.choice(self.chat_noise).play()
         if items[2].count>0:
             keys=self.talk_keys_after
@@ -81,17 +84,20 @@ class ChowShop:
         self.current_dialogue = self.dialoges.get(key,"")
     def draw(self):#drawing out the shop and the NPC
         w, h = self.window.get_size()
+        #BG and NPC
         self.window.blit(self.bg_image,(0,0))
         npc_pos = (30, 180)
         npc_rect = self.npc_image.get_rect(topleft=npc_pos)
         self.window.blit(self.npc_image, npc_rect)
         if self.bless_sold_start_time is not None:
-            sold_npc_pos=(-380,150)
+            sold_npc_pos=(-380,120)
             self.window.blit(self.sold_out_npc_image,sold_npc_pos)
+        #Words on screen
         title_surf = self.title_font.render("CRAZY CHOW'S TWIDDYDINKIES", True, (0,0,177))
         self.window.blit(title_surf, (5,20))
         coin_surf=self.dialoge_font.render(f"Choins: {self.chowin.total}", True, (200,200,0))
         self.window.blit(coin_surf,(395,50))
+        #items
         self.window.blit(self.bomb_icon, (self.BOMB_POS))
         txt = f"Left – Bomb (5) x{items[0].count}"
         surf = self.dialoge_font.render(txt, True, (0,0,0))
@@ -104,12 +110,12 @@ class ChowShop:
         txt = f"Up – Bless (50) {'✔' if items[2].count>0 else ''}"
         surf = self.dialoge_font.render(txt, True, (0,0,0))
         self.window.blit(surf, (5,100))
-        if self.bless_sold_start_time is not None:
+        if self.bless_sold_start_time is not None:#Sold out sign
             elapsed=pygame.time.get_ticks()-self.bless_sold_start_time
             if elapsed>=3000:
-                self.window.blit(self.sold_out_image,self.BLESS_POS)
+                self.window.blit(self.sold_out_image,(-112, 192))
                 self.sold_out_drawn=True
-        if self.current_dialogue:
+        if self.current_dialogue:#Dialogue bubble
             lines=self.current_dialogue.split("\n")
             rendered=[self.dialoge_font.render(l,True,(0,0,0)) for l in lines]
             widths=[s.get_width() for s in rendered]
