@@ -1,3 +1,4 @@
+# Important message!
 import pygame,sys,os#Van You See itself
 from pygame.mixer import Sound
 from VanYouSee import VanYouSeee
@@ -18,7 +19,7 @@ def Chowtris():
     score_rect=pygame.Rect(320,55,170,60)
     next_rect=pygame.Rect(320,215,170,180)
     level_clear_numbers = [5, 10, 15, 20, 0, 20, 25, 30, 40] 
-    level_time_limits =[3,1,1,1,100,1,1,1,2] #Only for testing
+    level_time_limits =[30,1,1,1,100,1,1,1,2] #Only for testing
     #level_time_limits = [30, 40, 45, 50, 30, 55, 60, 70, 90] 
     level_drop_speed = [700, 600, 500, 400, 150, 300, 250, 200, 150]
     your_level=0
@@ -346,9 +347,12 @@ def Chowtris():
         if vanyousee.game_over==True:
             window.blit(game_over_surface,(355,450,50,50))
         if vanyousee_win:
-            window.blit(victory_surface,(360,450,50,50))
             pygame.mixer.music.stop()
             win_noise.play()
+            window.fill(ChowTrisssss)
+            vanyousee.draw(window)
+            window.blit(victory_surface, (360, 450))
+            pygame.display.update()
             waiting = True
             while waiting:
                 ev = pygame.event.wait()
@@ -391,4 +395,24 @@ def Chowtris():
         window.blit(count_surf, (390, 560))
         pygame.display.update()
         Chowseconds.tick(60)
+def Intro():
+    os.system('cls')#For Windows
+    #os.system('clear') #For Apple
+    print("Important message!\n")
+    time.sleep(1)
+    print("This is an 'original' Tetris game\n!")
+    time.sleep(1)
+    print("There are 9 levels in the game, Level 0 to Level 8!\nThe block's falling speed will increase each level! Level 4 and Level 8 are the quickest!\n Failing those levels makes you lose the game! But Failing Level 4 does not!\nEach time you pass a level, you will go to a shop with a zombie NPC inside!\nThe zombie NPC will sell you powerful items to help you succeed in the game!\nYou will receive Chowins once you complete a level! Double Chowins for completing Level 4!\nYou use Chowins to buy items in the shop!\nBomb costs 5 Chowins! Clear Boost causes 4 Chowins! Chow God's Bless costs 50 Chowins!\nBe aware! You Chowins will be cleared to 0 once you leave the shop! So buy items as much as you can!\nYou enter the next level once you exits the shop! and you can use your newly bought items!\n")
+    time.sleep(10)
+    print("Keys for the game:\n'A' for moving the block left!\n'D' for moving the block right!\n'S' for moving the block down faster!\n'E' for rotating the block!\n'1' for using the bomb item!\n'2' for using the clear boost item!\n")
+    time.sleep(3)
+    print("Keys for the shop:\n'T' for talking with the NPC zombie!\n'Q' for exiting the shop!\n'Left_arrow' for purchasing the bomb item!\n'Right_arrow' for purchasing the clear boost item!\n'Up_arrow' for purchasing the Chow God's Bless item!\n")
+    time.sleep(3)
+    print("Item information:\n'Bomb': When activated, your next line clear can destroy 2 rows above the actual line clear you made!\n'Clear boost': When activated, your clears made in the next 10 seconds will be doubled!\n'Chow God's Bless': When you have this item and loses a level, this item will save you from losing the game,\nmaking you complete that level instantly, and send you to the shop!\n You can only buy this item once from the shop!\n")
+    time.sleep(5)
+    print("After you pass level 8, you win!\nIf your blocks are stuck to the top, you lose!\n You will not lose the game if you fail Level 4,\nor if you fail a level with Chow God's Bless in hand!\n")
+    time.sleep(2)
+    print("Good Luck from saving you from FORCES!")
+    time.sleep(1)
+#Intro()
 Chowtris()

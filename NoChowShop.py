@@ -1,12 +1,14 @@
-import pygame,sys,os
+import pygame,sys,os,random
 from Twiddydinkies import AllItem as items
 from Chowin import Chowin
+from pygame.mixer import Sound
 class ChowShop:
     def __init__(self,window,chowin):
         self.window=window
         self.chowin=chowin
         self.base=os.path.dirname(__file__)
         self.assets=os.path.join(self.base,"assets")
+        noises=os.path.join(self.base,"noises")
         icon_size=(100,100)
         zombie_size=(500,500)
         npc_size=(770,550)
@@ -21,6 +23,16 @@ class ChowShop:
         self.bomb_icon=pygame.transform.scale(bomb_raw, icon_size)
         self.boost_icon=pygame.transform.scale(boost_raw, icon_size)
         self.bless_icon=pygame.transform.scale(bless_raw, zombie_size)
+        self.chat_noise = [
+        Sound(os.path.join(noises, "chat1.mp3")),
+        Sound(os.path.join(noises, "chat2.mp3")),
+        Sound(os.path.join(noises, "chat3.mp3"))
+    ]
+        self.big_money=Sound(os.path.join(noises, "yesyes.mp3"))
+        self.you_poor=[
+        Sound(os.path.join(noises, "nono1.mp3")),
+        Sound(os.path.join(noises, "nono2.mp3")),
+        ]
         self.title_font=pygame.font.Font(None,45)
         self.dialoge_font=pygame.font.Font(None,30)
         self.dialoges={
@@ -33,7 +45,7 @@ class ChowShop:
             "T_4":"You cannot read my flag? It says:\n'Definetely true! No FAKES!', with no BRAINS!",
             "T_5":"The bomb makes you blast 3 rows in a clear,\n the boost makes you gain 2x clears in 10s.",
             "T_without_bless":"This Chow God's Bless, I dont know\n what it can do, but it is powerful.",
-            "too_poor":"WHAT ARE YOU DOING?! Dont try to buy stuff\n when you dont have enough Chowins!",
+            "too_poor":"TOO EXPENSIVE? WHAT ARE YOU SAYING?\n I AM A DISHONEST CONEHEAD ZOMBIE?!\n YOU THNIK TOO MUCH! PAY OR NOTHING!",
             "buy_bless":"You have a good taste! Wish Chow God\n make you complete every level!",
             "buy_after_bless":"Why are you staring at that!\n Chow God's Bless is alreasy sold out!"
         }
@@ -46,7 +58,12 @@ class ChowShop:
         self.BLESS_POS = (-95, 175)
     def set_dialogue(self,key):
         self.current_dialogue=self.dialoges.get(key,"")
+        if key=="buy_bless":
+            self.big_money.play()
+        elif key in("too_poor","buy_after_bless"):
+            random.choice(self.you_poor).play()
     def cycle_talk(self):
+        random.choice(self.chat_noise).play()
         if items[2].count>0:
             keys=self.talk_keys_after
         else:

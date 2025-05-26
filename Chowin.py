@@ -5,7 +5,7 @@ class Chowin:
         if level==4:
             multiplier=2
         else:
-            multiplier=1
+            multiplier=50
         if boost_active:
             multiplier*=2
         self.total=lines_cleared*multiplier
