@@ -400,5 +400,5 @@ def Intro():#Introduction of the VanYouSee, in the terminal
     time.sleep(2)
     print("Good Luck from saving you from FORCES!")
     time.sleep(1)
-#Intro()#Introduce the VanYouSee
+Intro()#Introduce the VanYouSee
 Chowtris()#Start the VanYouSee
