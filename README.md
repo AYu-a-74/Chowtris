@@ -13,7 +13,7 @@ The block's falling speed will increase each level! Level 4 and Level 8 are the 
  Failing those levels makes you lose the game! But Failing Level 4 does not!
 Each time you pass a level, you will go to a shop with a zombie NPC inside!
 The zombie NPC will sell you powerful items to help you succeed in the game!
-You will receive Chowins once you complete a level! Double Chowins for completing Level 4!
+You will receive Chowins once you complete a level! Quadruple Chowins for completing Level 4!
 You use Chowins to buy items in the shop!
 Bomb costs 5 Chowins! Clear Boost causes 4 Chowins! Chow God's Bless costs 50 Chowins!
 Be aware! You Chowins will be cleared to 0 once you leave the shop! So buy items as much as you can!
