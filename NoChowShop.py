@@ -12,14 +12,17 @@ class ChowShop:
         icon_size=(100,100)
         zombie_size=(500,500)
         npc_size=(770,550)
+        sold_out_size=(500,500)
         bomb_raw=pygame.image.load(os.path.join(self.assets,"bomb.png")).convert_alpha()
         boost_raw=pygame.image.load(os.path.join(self.assets,"boost.png")).convert_alpha()
         bless_raw=pygame.image.load(os.path.join(self.assets,"blesss.png")).convert_alpha()
         npc_raw=pygame.image.load(os.path.join(self.assets,"NPC.png")).convert_alpha()
+        sold_out_npc_raw=pygame.image.load(os.path.join(self.assets,"Sold_out_NPC.png")).convert_alpha()
+        sold_out_raw=pygame.image.load(os.path.join(self.assets,"Sold out.png")).convert_alpha()
         self.bg_image=pygame.image.load(os.path.join(self.assets,"bg.png")).convert()
         self.npc_image=pygame.transform.scale(npc_raw, npc_size)
-        self.sold_out_npc_image=pygame.image.load(os.path.join(self.assets,"Sold_out_NPC.png")).convert_alpha()
-        self.sold_out_image=pygame.image.load(os.path.join(self.assets,"Sold out.png")).convert_alpha()
+        self.sold_out_npc_image=pygame.transform.scale(sold_out_npc_raw,npc_size)
+        self.sold_out_image=pygame.transform.scale(sold_out_raw,sold_out_size)
         self.bomb_icon=pygame.transform.scale(bomb_raw, icon_size)
         self.boost_icon=pygame.transform.scale(boost_raw, icon_size)
         self.bless_icon=pygame.transform.scale(bless_raw, zombie_size)
@@ -56,10 +59,14 @@ class ChowShop:
         self.BOMB_POS  = (60, 445)
         self.BOOST_POS = (160, 445)
         self.BLESS_POS = (-95, 175)
+        self.bless_sold_start_time = None
+        self.sold_out_drawn = False
     def set_dialogue(self,key):
         self.current_dialogue=self.dialoges.get(key,"")
         if key=="buy_bless":
             self.big_money.play()
+            self.bless_sold_start_time = pygame.time.get_ticks()
+            self.sold_out_drawn = False
         elif key in("too_poor","buy_after_bless"):
             random.choice(self.you_poor).play()
     def cycle_talk(self):
@@ -71,12 +78,15 @@ class ChowShop:
         self.talk_index=(self.talk_index+1)%len(keys)
         key = keys[self.talk_index]
         self.current_dialogue = self.dialoges.get(key,"")
-    def draw(self):
+    def draw(self):#drawing out the shop and the NPC
         w, h = self.window.get_size()
         self.window.blit(self.bg_image,(0,0))
         npc_pos = (30, 180)
         npc_rect = self.npc_image.get_rect(topleft=npc_pos)
         self.window.blit(self.npc_image, npc_rect)
+        if self.bless_sold_start_time is not None:
+            sold_npc_pos=(-100,180)
+            self.window.blit(self.sold_out_npc_image,sold_npc_pos)
         title_surf = self.title_font.render("CRAZY CHOW'S TWIDDYDINKIES", True, (0,0,177))
         self.window.blit(title_surf, (5,20))
         coin_surf=self.dialoge_font.render(f"Choins: {self.chowin.total}", True, (200,200,0))
@@ -93,6 +103,11 @@ class ChowShop:
         txt = f"Up – Bless (50) {'✔' if items[2].count>0 else ''}"
         surf = self.dialoge_font.render(txt, True, (0,0,0))
         self.window.blit(surf, (5,100))
+        if self.bless_sold_start_time is not None and not self.sold_out_drawn:
+            elapsed=pygame.time.get_ticks()-self.bless_sold_start_time
+            if elapsed>=3000:
+                self.window.blit(self.sold_out_image,self.BLESS_POS)
+                self.sold_out_drawn=True
         if self.current_dialogue:
             lines=self.current_dialogue.split("\n")
             rendered=[self.dialoge_font.render(l,True,(0,0,0)) for l in lines]
