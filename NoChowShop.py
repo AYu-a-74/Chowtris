@@ -17,11 +17,12 @@ class ChowShop:
         boost_raw=pygame.image.load(os.path.join(self.assets,"boost.png")).convert_alpha()
         bless_raw=pygame.image.load(os.path.join(self.assets,"blesss.png")).convert_alpha()
         npc_raw=pygame.image.load(os.path.join(self.assets,"NPC.png")).convert_alpha()
-        sold_out_npc_raw=pygame.image.load(os.path.join(self.assets,"Sold_out_NPC.png")).convert_alpha()
+        sold_out_npc_raw=pygame.image.load(os.path.join(self.assets,"Sold_out_inverted.png")).convert_alpha()
         sold_out_raw=pygame.image.load(os.path.join(self.assets,"Sold out.png")).convert_alpha()
         self.bg_image=pygame.image.load(os.path.join(self.assets,"bg.png")).convert()
         self.npc_image=pygame.transform.scale(npc_raw, npc_size)
-        self.sold_out_npc_image=pygame.transform.scale(sold_out_npc_raw,npc_size)
+        tmp=pygame.transform.scale(sold_out_npc_raw,npc_size)
+        self.sold_out_npc_image = pygame.transform.rotate(tmp, -30)
         self.sold_out_image=pygame.transform.scale(sold_out_raw,sold_out_size)
         self.bomb_icon=pygame.transform.scale(bomb_raw, icon_size)
         self.boost_icon=pygame.transform.scale(boost_raw, icon_size)
@@ -85,7 +86,7 @@ class ChowShop:
         npc_rect = self.npc_image.get_rect(topleft=npc_pos)
         self.window.blit(self.npc_image, npc_rect)
         if self.bless_sold_start_time is not None:
-            sold_npc_pos=(-100,180)
+            sold_npc_pos=(-380,150)
             self.window.blit(self.sold_out_npc_image,sold_npc_pos)
         title_surf = self.title_font.render("CRAZY CHOW'S TWIDDYDINKIES", True, (0,0,177))
         self.window.blit(title_surf, (5,20))
@@ -103,7 +104,7 @@ class ChowShop:
         txt = f"Up – Bless (50) {'✔' if items[2].count>0 else ''}"
         surf = self.dialoge_font.render(txt, True, (0,0,0))
         self.window.blit(surf, (5,100))
-        if self.bless_sold_start_time is not None and not self.sold_out_drawn:
+        if self.bless_sold_start_time is not None:
             elapsed=pygame.time.get_ticks()-self.bless_sold_start_time
             if elapsed>=3000:
                 self.window.blit(self.sold_out_image,self.BLESS_POS)
