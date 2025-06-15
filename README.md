@@ -1,6 +1,28 @@
 # Chowtris
 Forceful Tetris
 Made by AYu a 74
+
+#This game is made of VERY EASY codes, it is very recommended for starters to try making this game.
+If you want to learn entry level python, try to make this game!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Special thanks to Plant Versus Zombies for providing inspirations!
 
 Important message!
